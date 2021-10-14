@@ -13539,6 +13539,23 @@ var crdt = (function (exports) {
 
   }
 
+  function updateUserCursor(id, x, y) {
+    var dc = document.querySelector("#cursor-".concat(id));
+
+    if (!dc) {
+      console.warn("Adding ".concat(id));
+      var newCursor = document.createElement("div");
+      newCursor.id = "cursor-".concat(id);
+      newCursor.innerHTML = "".concat(id);
+      newCursor.style.position = "fixed";
+      document.querySelector("#cursors").appendChild(newCursor);
+      dc = newCursor;
+    }
+
+    dc.style.left = "".concat(x, "px");
+    dc.style.top = "".concat(y, "px");
+  }
+
   var bundle = function bundle() {
     var myId = Math.floor(Math.random() * 1000);
     console.log("Starting CRDT id: ".concat(myId));
@@ -13547,10 +13564,40 @@ var crdt = (function (exports) {
     provider.on("status", function (event) {
       console.log("Status: " + event.status); // logs "connected" or "disconnected"
     });
+    provider.awareness.on("change", function (changes) {
+      var users = [];
+      provider.awareness.getStates().forEach(function (state) {
+        if (state.user) {
+          users.push("<div>".concat(state.user.name, "</div>"));
+
+          if (state.cursor) {
+            requestAnimationFrame(function () {
+              updateUserCursor(state.user.name, state.cursor.x, state.cursor.y);
+            });
+          }
+        }
+      });
+      document.querySelector("#userList").innerHTML = users.join("");
+    });
     var arr = ydoc.getArray("shared-state");
     arr.observe(function (event) {
       console.log(event, arr.toJSON());
     });
+    provider.awareness.setLocalStateField("user", {
+      name: "User".concat(myId)
+    });
+    window.addEventListener("mousemove", function (evt) {
+      evt.preventDefault();
+
+      if (evt.offsetX < 0 || evt.offsetY < 0) {
+        return;
+      }
+
+      provider.awareness.setLocalStateField("cursor", {
+        x: evt.offsetX,
+        y: evt.offsetY
+      });
+    }, false);
     return {
       add: function add() {
         arr.push([myId]);
