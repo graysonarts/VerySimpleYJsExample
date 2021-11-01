@@ -1,7 +1,30 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <script src="http://localhost:4444/socket.io/socket.io.js"></script>
+    <!-- <script
+      src="https://cdn.socket.io/4.3.2/socket.io.min.js"
+      integrity="sha384-KAZ4DtjNhLChOB/hxXuKqhMLYvx3b5MlT55xPEiNmREKRzeEm+RVPlTnAn0ajQNs"
+      crossorigin="anonymous"
+    ></script> -->
     <script src="./bundle.js"></script>
+    <!-- <script>
+      const socket = io("ws://localhost:4444", {
+        transports: ["websocket"],
+      });
+      socket.on("connect", () => {
+        console.log(socket.id, "connected");
+      });
+      socket.on("disconnect", (reason) => {
+        console.log(socket.id, "disconnect", reason);
+      });
+      socket.on("connect_error", (...args) => {
+        console.error(socket.id, "error connecting", args);
+      });
+      socket.on("message", (...args) => {
+        console.warn(args);
+      });
+    </script> -->
   </head>
   <body draggable="true" style="min-height: 100vh">
     <div id="userList">&nbsp;</div>

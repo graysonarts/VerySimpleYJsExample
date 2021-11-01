@@ -1,7 +1,8 @@
 "use strict";
 
 import * as Y from "yjs";
-import { WebsocketProvider } from "y-websocket";
+import { SocketIOProvider as SocketProvider } from "@codesee/y-socketio-provider";
+// import { WebsocketProvider as SocketProvider } from "y-websocket";
 
 function updateUserCursor(id, x, y) {
   let dc = document.querySelector(`#cursor-${id}`);
@@ -24,14 +25,10 @@ export const bundle = () => {
   console.log(`Starting CRDT id: ${myId}`);
 
   const ydoc = new Y.Doc();
-  const provider = new WebsocketProvider(
-    "ws://localhost:4444",
-    "something-here",
-    ydoc
-  );
-  provider.on("status", (event) => {
-    console.log("Status: " + event.status); // logs "connected" or "disconnected"
-  });
+  const provider = new SocketProvider("ws://localhost:4444", "", ydoc);
+  // provider.on("status", (event) => {
+  //   console.log("Status: " + event.status); // logs "connected" or "disconnected"
+  // });
   provider.awareness.on("change", (changes) => {
     const users = [];
     provider.awareness.getStates().forEach((state) => {
